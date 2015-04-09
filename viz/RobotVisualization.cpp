@@ -68,12 +68,12 @@ void RobotVisualization::deHighlightSegment(QString link_name){
 }
 
 void RobotVisualization::showSegmentText(QString link_name, QString text){
-    OSGSegment* seg = getSegment(link_name.toStdString());
+    robot_model::OSGSegment* seg = getSegment(link_name.toStdString());
     seg->attachTextLabel(text.toStdString());
 }
 
 void RobotVisualization::hideSegmentText(QString link_name){
-    OSGSegment* seg = getSegment(link_name.toStdString());
+    robot_model::OSGSegment* seg = getSegment(link_name.toStdString());
     seg->removeTextLabel();
 }
 
@@ -98,7 +98,7 @@ void RobotVisualization::setModelFile(QString modelFile)
     vector<string> segments = getSegmentNames();
     for (std::size_t i = 0; i != segments.size(); ++i)
     {
-        OSGSegment* segment = getSegment(segments[i]);
+        robot_model::OSGSegment* segment = getSegment(segments[i]);
         assert(segment);
         vizkit3d::RigidBodyStateVisualization* frame =
                 new vizkit3d::RigidBodyStateVisualization(this);
@@ -168,7 +168,7 @@ void RobotVisualization::setSegmentNamesEnabled(bool value)
 {
     segmentNamesEnabled_ = value;
     for (size_t i=0; i<segmentNames_.size(); i++){
-        OSGSegment* seg = getSegment(segmentNames_[i]);
+        robot_model::OSGSegment* seg = getSegment(segmentNames_[i]);
         if(value)
             seg->attachTextLabel();
         else

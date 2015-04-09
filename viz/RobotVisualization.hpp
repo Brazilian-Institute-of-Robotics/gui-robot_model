@@ -14,7 +14,7 @@ namespace vizkit3d
 class RobotVisualization
         : public vizkit3d::Vizkit3DPlugin<base::samples::Joints>,
           public vizkit3d::VizPluginAddType<base::samples::RigidBodyState>,
-          public RobotModel
+          public robot_model::RobotModel
         , boost::noncopyable
 {
     Q_OBJECT

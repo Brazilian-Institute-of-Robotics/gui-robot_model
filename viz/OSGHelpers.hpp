@@ -1,45 +1,6 @@
 #ifndef OSGHELPERS_HPP
 #define OSGHELPERS_HPP
 
-inline void sdf_pose_to_osg(sdf::ElementPtr pose, osg::Vec3& pos, osg::Quat& quat)
-{
-    double x, y, z;
-    double roll, pitch, yaw;
-    sscanf(pose->Get<std::string>().c_str(), "%lf %lf %lf %lf %lf %lf", &x, &y, &z, &roll, &pitch, &yaw);
-    pos.set(x, y, z);
-    osg::Quat q = osg::Quat(roll, osg::Vec3d(1, 0, 0), pitch, osg::Vec3d(0, 1, 0), yaw, osg::Vec3d(0, 0, 1));
-    quat.set(q.x(), q.y(), q.z(), q.w());
-}
-
-
-inline void sdf_pose_to_osg(sdf::ElementPtr pose, osg::PositionAttitudeTransform& out)
-{
-    double x, y, z;
-    double roll, pitch, yaw;
-    sscanf(pose->Get<std::string>().c_str(), "%lf %lf %lf %lf %lf %lf", &x, &y, &z, &roll, &pitch, &yaw);
-    out.setPosition(osg::Vec3(x, y, z));
-    out.setAttitude(osg::Quat(roll, osg::Vec3d(1, 0, 0), pitch, osg::Vec3d(0, 1, 0), yaw, osg::Vec3d(0, 0, 1)));
-}
-
-inline void sdf_size_to_osg(sdf::ElementPtr size, osg::Vec3& out)
-{
-    double x, y, z;
-    sscanf(size->Get<std::string>().c_str(), "%lf %lf %lf", &x, &y, &z);
-    out.set(x, y, z);
-}
-
-inline void sdf_scale_to_osg(sdf::ElementPtr scale, osg::Vec3& out)
-{
-    sdf_size_to_osg(scale, out);
-}
-
-inline void sdf_color_to_osg(sdf::ElementPtr color, osg::Vec4& out)
-{
-    double r, g, b, a;
-    sscanf(color->Get<std::string>().c_str(), "%lf %lf %lf %lf", &r, &g, &b, &a);
-    out.set(r, g, b, a);
-}
-
 inline void kdl_to_osg(KDL::Frame& in, osg::PositionAttitudeTransform& out){
     out.setPosition(osg::Vec3(in.p[0],in.p[1],in.p[2]));
     double x,y,z,w;
@@ -47,15 +8,6 @@ inline void kdl_to_osg(KDL::Frame& in, osg::PositionAttitudeTransform& out){
     out.setAttitude(osg::Quat(x,y,z,w));
 }
 
-inline osg::Vec3 urdf_to_osg(const urdf::Vector3 &in){
-    return osg::Vec3(in.x, in.y, in.z);
-}
-
-inline void urdf_to_osg(urdf::Pose& in, osg::PositionAttitudeTransform& out){
-    out.setPosition(urdf_to_osg(in.position));
-    //std::cout << in.position.x << ","<< in.position.y<<","<< in.position.z<<std::endl;
-    out.setAttitude(osg::Quat(in.rotation.x, in.rotation.y, in.rotation.z, in.rotation.w));
-}
 
 void printNodeStructureRecursive(osg::Node* node, int levelCount){
 

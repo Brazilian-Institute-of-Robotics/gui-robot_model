@@ -17,6 +17,14 @@
 #include <QHash>
 #include <QObject>
 
+namespace robot_model {
+
+    struct Visual
+    {
+        osg::ref_ptr<osg::PositionAttitudeTransform> to_visual;
+        osg::ref_ptr<osg::Geode> visual;
+    };
+
 
 /**
  * @brief Data structure that is attached as 'User Data' to nodes within the RobotModel.
@@ -92,6 +100,12 @@ public:
      * @brief returns the osg Node that is the root of the visualization for
      *   this segment
      */
+    osg::ref_ptr<osg::Group> getToTipOsg() const; 
+    
+    /**
+     * @brief returns the osg Node that is the root of the visualization for
+     *   this segment
+     */
     osg::ref_ptr<osg::Group> getGroup() const; 
 
 protected:
@@ -108,7 +122,7 @@ protected:
     *
     * @param visual: Parsed URDF tag (using urdf_parser) of the visual.
     */
-   void attachVisual(boost::shared_ptr<urdf::Visual> visual, QDir prefix = QDir());
+   void attachVisual(Visual const& visual, QDir prefix = QDir());
 
    /**
    * @brieg Create nodes with visual meshes
@@ -117,26 +131,7 @@ protected:
    *
    * @param visual_array: Parsed URDF tag (using urdf_parser) of the visual.
    */
-   void attachVisuals(std::vector<boost::shared_ptr<urdf::Visual> > &visual_array, QDir prefix = QDir());
-
-   /**
-   * @brief Attach visual mesh to node.
-   *
-   * Should only be called during initial construction of the robot model.
-   *
-   * @param visual: Parsed SDF tag (using sdformat) of the visual.
-   */
-   void attachVisual(sdf::ElementPtr visual, QDir prefix = QDir());
-
-   /**
-   * @brieg Create nodes with visual meshes
-   *
-   * Should only be called during initial construction of the robot model
-   *
-   * @param visual_array: Parsed SDF tag (using sdformat) of the visual.
-   */
-   void attachVisuals(std::vector<sdf::ElementPtr> &visual_array, QDir prefix = QDir());
-
+   void attachVisuals(std::vector<Visual> const &visual_array, QDir prefix = QDir());
 
 private:
     KDL::Segment seg_; /**< KDKL representation of the segment */
@@ -186,8 +181,6 @@ public:
         traverse(node, nv);
     }
 };
-
-typedef std::map<std::string, sdf::ElementPtr> SdfElementPtrMap;
 
 /**
  * @brief This class is used for creating a visualization of a robot model and access it.
@@ -265,11 +258,9 @@ public:
     bool relocateRoot(std::string name);
 
 protected:
-    osg::ref_ptr<osg::Node> makeOsg2(KDL::Segment kdl_seg, urdf::Link urdf_link, osg::ref_ptr<osg::Group> root);
-    osg::ref_ptr<osg::Node> makeOsg( boost::shared_ptr<urdf::ModelInterface> urdf_model );
-
-    osg::Node* makeOsg2(KDL::Segment kdl_seg, sdf::ElementPtr sdf_link, sdf::ElementPtr sdf_parent_link, osg::Group* root);
-    osg::Node* makeOsg( sdf::ElementPtr sdf );
+    osg::ref_ptr<OSGSegment> makeOsgSegment(KDL::Segment const& kdl_seg, std::vector<Visual> const& visuals);
+    osg::ref_ptr<osg::Node> makeOsg(boost::shared_ptr<urdf::ModelInterface> urdf_model );
+    osg::ref_ptr<osg::Node> makeOsg(KDL::Tree const& tree, std::map<std::string, Visual>& visuals);
 
     osg::Node* loadURDF(QString path);
 
@@ -284,9 +275,6 @@ protected:
      * these plugins are used to load meshs in a openscenegraph structure
      */
     void loadPlugins();
-
-    SdfElementPtrMap loadSdfModelLinks(sdf::ElementPtr sdf_model);
-
 
 protected:
     osg::ref_ptr<osg::Group> root_; /**< Root of the OSG scene containing the robot */
@@ -317,5 +305,6 @@ public:
     friend class InteractionHandler;
     friend class URDFRobotWidget;
 };
+}
 
 #endif
